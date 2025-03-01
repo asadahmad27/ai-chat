@@ -7,6 +7,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify"; // To sanitize HTML
 
+console.log("env", process.meta.env.VITE_BASE_URL);
+const BASE_URL = "https://ai-chat-backend-nrl9.onrender.com";
 const ChatArea = () => {
   const dispatch = useDispatch();
   const { chatHistory, loading, error } = useSelector((state) => state.chat);
@@ -45,15 +47,11 @@ const ChatArea = () => {
       formData.append("message", message);
       formData.append("image", image);
 
-      response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/chat-with-image`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      response = await axios.post(`${BASE_URL}/api/chat-with-image`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
     } else {
-      response = await axios.post(`${import.meta.env.VITE_BASE_URL}/api/chat`, {
+      response = await axios.post(`${BASE_URL}/api/chat`, {
         message,
       });
     }

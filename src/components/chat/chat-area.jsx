@@ -7,7 +7,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify"; // To sanitize HTML
 
-console.log("env", process.meta.env.VITE_BASE_URL);
+// console.log("env", process.meta.env.VITE_BASE_URL);
 const BASE_URL = "https://ai-chat-backend-nrl9.onrender.com";
 const ChatArea = () => {
   const dispatch = useDispatch();

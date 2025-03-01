@@ -5,7 +5,7 @@ function Header() {
   console.log(selectedChat);
   return (
     <header className="flex items-center justify-between p-4 border-b border-gray-800">
-      <h1 className="text-xl font-medium">Internal AI Dashboard</h1>
+      <h1 className="text-xl font-medium">{selectedChat?.title ?? "Home"}</h1>
       <div className="flex gap-2">
         <button className="p-2 hover:bg-gray-800 rounded-lg">
           <svg

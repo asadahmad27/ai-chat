@@ -22,7 +22,6 @@ const ChatArea = () => {
   const textareaRef = useRef(null);
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-  console.log(loading, "loadin");
   const geCurrentChat = () => {
     try {
       axios
@@ -37,7 +36,8 @@ const ChatArea = () => {
       navigate("/");
     }
   };
-  // Fetch chat history for this chatId
+
+  // ✅ Fetch chat history for this chatId
   useEffect(() => {
     if (chatId) {
       geCurrentChat();
@@ -54,18 +54,17 @@ const ChatArea = () => {
 
   const handleTextareaChange = (e) => {
     setMessage(e.target.value);
-
     const textarea = textareaRef.current;
-    textarea.style.height = "auto"; // Reset height
-    textarea.style.height = `${textarea.scrollHeight}px`; // Adjust height based on content
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
   };
 
   // Handle Enter key press (send message instead of new line)
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault(); // Prevents new line
+      e.preventDefault();
       if (message.trim()) {
-        handleSubmit(e); // Sends the message
+        handleSubmit(e);
       }
     }
   };
@@ -137,7 +136,6 @@ const ChatArea = () => {
 
     try {
       await sendMessageToAPI(selectedChat.chatId, messageToSend, imageToSend);
-
       setTimeout(() => {
         axios.get(`${BASE_URL}/api/history/${chatId}`).then((res) => {
           setSelectedChat(res.data);
@@ -175,7 +173,7 @@ const ChatArea = () => {
             <div className="max-w-xs p-3 rounded-lg shadow-md bg-gray-700 text-white">
               {chat.imageUrl && (
                 <img
-                  src={chat.imageUrl}
+                  src={`${import.meta.env.VITE_BASE_URL}${chat?.imageUrl}`}
                   alt="Uploaded"
                   className="mb-2 rounded-md"
                 />
@@ -191,6 +189,18 @@ const ChatArea = () => {
           <div className="flex justify-center">
             <div className="w-6 h-6 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mr-4"></div>
             Generating Response...
+          </div>
+        )}
+
+        {/* ✅ Retry Button for Failed Messages */}
+        {failedMessage && (
+          <div className="flex justify-center mt-4">
+            <button
+              className="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded-lg cursor-pointer"
+              onClick={(e) => handleSubmit(e, true)}
+            >
+              Retry Last Message
+            </button>
           </div>
         )}
       </div>

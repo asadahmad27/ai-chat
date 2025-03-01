@@ -1,7 +1,3 @@
-// import Header from "./components/Header";
-// import ChatArea from "./components/ChatArea";
-// import AssistantCards from "./components/AssistantCards";
-
 import AssistantCards from "./components/assistant-card";
 import { ChatArea } from "./components/chat";
 import Header from "./components/header";
@@ -10,11 +6,12 @@ import Sidebar from "./components/sidebar";
 import { Provider } from "react-redux";
 import store from "./redux/store";
 import { useEffect } from "react";
+import axios from "axios";
 
 function App() {
   // a mock cal to api to awake the server
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BASE_URL}`);
+    axios.get(`${import.meta.env.VITE_BASE_URL}`);
   }, []);
   return (
     <Provider store={store}>

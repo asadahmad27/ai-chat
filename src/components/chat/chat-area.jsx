@@ -3,6 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading, sendMessage, setError } from "../../redux/reducers/chat";
 import axios from "axios";
 import { ArrowSend } from "../icons";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import DOMPurify from "dompurify"; // To sanitize HTML
 
 const ChatArea = () => {
   const dispatch = useDispatch();
@@ -145,7 +148,12 @@ const ChatArea = () => {
                   className="mb-2 rounded-md"
                 />
               )}
-              <p>{chat.user}</p>
+              <ReactMarkdown
+                // className="prose prose-invert"
+                remarkPlugins={[remarkGfm]}
+              >
+                {DOMPurify.sanitize(chat.user)}
+              </ReactMarkdown>
             </div>
           </div>
         ))}
@@ -181,7 +189,7 @@ const ChatArea = () => {
           <div className="relative mb-2 flex justify-center">
             <img
               src={imagePreview}
-              alt="Preview"
+              alt="preview"
               className="w-24 h-24 rounded-md shadow-md"
             />
             <button
@@ -196,6 +204,7 @@ const ChatArea = () => {
         <div className="flex items-center space-x-3">
           {/* Image Upload Button */}
           <label className="cursor-pointer">
+            <span className="hidden">Upload Image</span>
             <input
               type="file"
               accept="image/*"

@@ -1,4 +1,12 @@
-function Sidebar() {
+import React from "react";
+import { useNavigate, useParams } from "react-router";
+import { setSelectedChat } from "../redux/reducers/chat";
+import { useDispatch } from "react-redux";
+
+const Sidebar = ({ onAddNewChat, chatHistory }) => {
+  const navigate = useNavigate();
+  const { chatId } = useParams();
+  const dispatch = useDispatch();
   const chats = [
     { id: 1, title: "New Chat", date: "2/24/2025", active: true },
     { id: 2, title: "hi", date: "2/24/2025" },
@@ -9,9 +17,12 @@ function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 border-r border-gray-800 flex flex-col">
+    <aside className="w-64 border-r border-gray-800 flex flex-col px-4">
       <div className="p-4">
-        <button className="w-full flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 p-2 rounded-lg transition-colors">
+        <button
+          className="w-full flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-700 p-2 rounded-lg transition-colors"
+          onClick={onAddNewChat}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-4 h-4"
@@ -29,12 +40,16 @@ function Sidebar() {
         </button>
       </div>
       <div className="flex-1 overflow-auto">
-        {chats.map((chat) => (
+        {chatHistory?.map((chat) => (
           <div
-            key={chat.id}
-            className={`p-3 cursor-pointer hover:bg-gray-800 transition-colors ${
-              chat.active ? "bg-gray-800" : ""
+            key={chat.chatId}
+            className={`p-3 cursor-pointer hover:bg-gray-800 transition-colors rounded-lg mb-2 ${
+              chat.chatId == chatId ? "bg-gray-800" : ""
             }`}
+            onClick={() => {
+              dispatch(setSelectedChat(chat));
+              navigate(`/chat/${chat.chatId}`);
+            }}
           >
             <div className="font-medium">{chat.title}</div>
             <div className="text-xs text-gray-400">{chat.date}</div>
@@ -43,6 +58,6 @@ function Sidebar() {
       </div>
     </aside>
   );
-}
+};
 
 export default Sidebar;

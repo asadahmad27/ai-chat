@@ -9,8 +9,12 @@ const chatSlice = createSlice({
     ],
     loading: false,
     error: null,
+    selectedChat: null, // Stores the currently selected chat
   },
   reducers: {
+    setSelectedChat: (state, action) => {
+      state.selectedChat = action.payload;
+    },
     sendMessage: (state, action) => {
       state.chatHistory.push(action.payload);
     },
@@ -27,7 +31,7 @@ const chatSlice = createSlice({
 });
 
 // Export actions
-export const { sendMessage, setLoading, setError, clearChat } =
+export const { sendMessage, setLoading, setError, clearChat, setSelectedChat } =
   chatSlice.actions;
 
 // Export the reducer

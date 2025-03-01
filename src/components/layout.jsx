@@ -1,9 +1,51 @@
-import "./globals.css";
+import AssistantCards from "./assistant-card";
+import ChatArea from "./chat/chat-area";
+import { useEffect, useState } from "react";
+import Sidebar from "./sidebar";
+import Header from "./header";
+import axios from "axios";
+import { useParams } from "react-router";
 
-export default function RootLayout({ children }) {
+const Layout = () => {
+  const { chatId } = useParams();
+  const [chatHistory, setChatHistory] = useState([]);
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [message, setMessage] = useState("");
+
+  // Fetch chat history
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_BASE_URL}/api/history`)
+      .then((res) => setChatHistory(res.data))
+      .catch((err) => console.error("Error fetching chat history:", err));
+  }, []);
+
+  // Start a new chat
+  const handleNewChat = async () => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/api/history/new`
+      );
+      setChatHistory([...chatHistory, res.data]);
+      setSelectedChat(res.data);
+    } catch (err) {
+      console.error("Error creating new chat:", err);
+    }
+  };
+  console.log(chatHistory);
+
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <div className="flex h-screen bg-[#0a0c1b] text-white">
+      <Sidebar onAddNewChat={handleNewChat} chatHistory={chatHistory} />
+      <div className="flex-1 flex flex-col">
+        <Header />
+        <main className="flex-1 overflow-auto p-6 lg:max-w-[80%]  max-w-[90%] mx-auto">
+          <AssistantCards />
+          {chatId ? <ChatArea /> : <p>Please Select or Start a New Chat</p>}
+        </main>
+      </div>
+    </div>
   );
-}
+};
+
+export default Layout;

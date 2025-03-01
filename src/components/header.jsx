@@ -1,4 +1,8 @@
+import { useSelector } from "react-redux";
+
 function Header() {
+  const { selectedChat } = useSelector((state) => state.chat);
+  console.log(selectedChat);
   return (
     <header className="flex items-center justify-between p-4 border-b border-gray-800">
       <h1 className="text-xl font-medium">Internal AI Dashboard</h1>

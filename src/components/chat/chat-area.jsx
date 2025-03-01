@@ -4,7 +4,8 @@ import { setLoading, sendMessage, setError } from "../../redux/reducers/chat";
 import axios from "axios";
 import { ArrowSend } from "../icons";
 
-const BASE_URL = "http://localhost:3333";
+// const BASE_URL = "http://localhost:3333";
+const BASE_URL = "https://ai-chat-psi-flax.vercel.app";
 
 const ChatArea = () => {
   const dispatch = useDispatch();
@@ -44,9 +45,13 @@ const ChatArea = () => {
       formData.append("message", message);
       formData.append("image", image);
 
-      response = await axios.post(`${BASE_URL}/api/chat-with-image`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      response = await axios.post(
+        `${import.meta.env.BASE_URL}/api/chat-with-image`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
     } else {
       response = await axios.post(`${BASE_URL}/api/chat`, { message });
     }

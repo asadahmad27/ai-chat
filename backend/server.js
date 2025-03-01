@@ -6,7 +6,14 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 3333;
 
-app.use(cors());
+const corsOptions = {
+  origin: ["http://localhost:5173", "https://ai-chat-psi-flax.vercel.app"], // Add your frontend URLs here
+  methods: "GET,POST,OPTIONS",
+  allowedHeaders: "Content-Type,Authorization",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

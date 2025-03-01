@@ -4,9 +4,10 @@ import { useEffect, useState } from "react";
 import Sidebar from "./sidebar";
 import Header from "./header";
 import axios from "axios";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 const Layout = () => {
+  const navigate = useNavigate();
   const { chatId } = useParams();
   const [chatHistory, setChatHistory] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -28,6 +29,8 @@ const Layout = () => {
       );
       setChatHistory([...chatHistory, res.data]);
       setSelectedChat(res.data);
+      console.log(res?.data);
+      navigate(`/chat/${res?.data?.chatId}`);
     } catch (err) {
       console.error("Error creating new chat:", err);
     }
@@ -41,7 +44,13 @@ const Layout = () => {
         <Header />
         <main className="flex-1 overflow-auto p-6 lg:max-w-[80%]  max-w-[90%] mx-auto">
           <AssistantCards />
-          {chatId ? <ChatArea /> : <p>Please Select or Start a New Chat</p>}
+          {chatId ? (
+            <ChatArea />
+          ) : (
+            <p className="text-xl text-center mt-8">
+              Please Select or Start a New Chat
+            </p>
+          )}
         </main>
       </div>
     </div>

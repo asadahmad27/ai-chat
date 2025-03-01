@@ -6,9 +6,10 @@ import { ArrowSend } from "../icons";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 
 const ChatArea = () => {
+  const navigate = useNavigate();
   const { chatId } = useParams();
   const dispatch = useDispatch();
   const { chatHistory, loading, error } = useSelector((state) => state.chat);
@@ -21,13 +22,25 @@ const ChatArea = () => {
   const textareaRef = useRef(null);
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-  // Fetch chat history for this chatId
-  useEffect(() => {
-    if (chatId) {
+  console.log(loading, "loadin");
+  const geCurrentChat = () => {
+    try {
       axios
         .get(`${BASE_URL}/api/history/${chatId}`)
         .then((res) => setSelectedChat(res.data))
-        .catch((err) => console.error("Error fetching chat:", err));
+        .catch((err) => {
+          console.error("Error fetching chat:", err);
+          navigate("/");
+        });
+    } catch (e) {
+      console.error("Error fetching chat:", e);
+      navigate("/");
+    }
+  };
+  // Fetch chat history for this chatId
+  useEffect(() => {
+    if (chatId) {
+      geCurrentChat();
     }
   }, [chatId]);
 
@@ -38,6 +51,24 @@ const ChatArea = () => {
       behavior: "smooth",
     });
   }, [selectedChat, failedMessage]);
+
+  const handleTextareaChange = (e) => {
+    setMessage(e.target.value);
+
+    const textarea = textareaRef.current;
+    textarea.style.height = "auto"; // Reset height
+    textarea.style.height = `${textarea.scrollHeight}px`; // Adjust height based on content
+  };
+
+  // Handle Enter key press (send message instead of new line)
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // Prevents new line
+      if (message.trim()) {
+        handleSubmit(e); // Sends the message
+      }
+    }
+  };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -79,6 +110,7 @@ const ChatArea = () => {
   const handleSubmit = async (e, retry = false) => {
     e.preventDefault();
     if (!selectedChat) return;
+    dispatch(setLoading(true));
 
     const messageToSend = retry ? failedMessage.message : message;
     const imageToSend = retry ? failedMessage.image : image;
@@ -102,7 +134,6 @@ const ChatArea = () => {
     setImage(null);
     setImagePreview(null);
     setFailedMessage(null);
-    dispatch(setLoading(true));
 
     try {
       await sendMessageToAPI(selectedChat.chatId, messageToSend, imageToSend);
@@ -115,7 +146,9 @@ const ChatArea = () => {
     } catch (err) {
       setFailedMessage({ message: messageToSend, image: imageToSend });
     } finally {
-      dispatch(setLoading(false));
+      setTimeout(() => {
+        dispatch(setLoading(false));
+      }, 2000);
     }
   };
 
@@ -126,8 +159,13 @@ const ChatArea = () => {
         className="flex-1 overflow-y-auto p-4 space-y-3"
       >
         {error && <p className="text-red-500">{error}</p>}
+        {selectedChat?.messages?.length === 0 && (
+          <p className="text-white flex items-center justify-center text-xl">
+            No messages found
+          </p>
+        )}
 
-        {selectedChat?.messages.map((chat, index) => (
+        {selectedChat?.messages?.map((chat, index) => (
           <div
             key={index}
             className={`flex ${
@@ -200,7 +238,8 @@ const ChatArea = () => {
           <textarea
             ref={textareaRef}
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleTextareaChange}
+            onKeyDown={handleKeyDown}
             placeholder="Type a message..."
             className="w-full bg-[#131629] text-white rounded-lg px-4 py-3"
             rows="1"

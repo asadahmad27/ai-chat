@@ -9,8 +9,13 @@ import Sidebar from "./components/sidebar";
 
 import { Provider } from "react-redux";
 import store from "./redux/store";
+import { useEffect } from "react";
 
 function App() {
+  // a mock cal to api to awake the server
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BASE_URL}`);
+  }, []);
   return (
     <Provider store={store}>
       <div className="flex h-screen bg-[#0a0c1b] text-white">
